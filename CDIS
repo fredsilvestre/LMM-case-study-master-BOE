@@ -24,7 +24,7 @@ library(psych)
 library(car)
 
 # Load the data
-allData <- fread("Dataset CDIS.csv", header = T, dec=",")
+allData <- fread("XXXXXXX", header = T, dec=",")
 
 #Description of the variables
 View(allData)
