@@ -1,0 +1,11 @@
+Exercice to be prepared individually
+
+- Do the same analysis with the variable TDM (open field test: don't forget to change the variables Temperature and Time)
+
+- Write a report with:
+	- the best model structure
+	- a table with AIC
+	- the analysis of the model with fixed and random effects
+	- the values of conditional repeatability for TDM
+	- in few lines, draw the conclusions of your analysis, including a comparison between CDIS and TDM, and including a comparison with the article of Bierbach et al 2017.
+	- develop in a few lines 3 perspectives to improve the study
