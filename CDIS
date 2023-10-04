@@ -33,7 +33,7 @@ library(bestNormalize)
 
 
 # Load the data
-allData <- fread("XXX", header = T, dec=",")# raw data (best to use)
+allData <- fread("https://raw.githubusercontent.com/fredsilvestre/LMM-case-study-master-BOE/main/Dataset_CDIS.csv", header = T, dec=",")# raw data (best to use)
 View(allData)
 
 
@@ -44,12 +44,12 @@ test1 <- dplyr::rename(allData, c("CDIS"="Cumulative duration in shelter (s)", "
 test1
 test1 <- test1[,c("Population", "ID", "Replicate", "Weight", "Length", "TempShelter", "TimeShelter", "CDIS")] #subset only the columns of interest
 
-XXX(test1)
+str(test1)
 
 #we transform into factor the non-continuous variables
-test1$`ID`=XXX(test1$`ID`)
-test1$`Population`=XXX(test1$`Population`)
-test1$`Replicate`=XXX(test1$`Replicate`)
+test1$`ID`=as.factor(test1$`ID`)
+test1$`Population`=as.factor(test1$`Population`)
+test1$`Replicate`=as.factor(test1$`Replicate`)
 
 #we transform the time variable with lubridate
 test1$`TimeShelter`=parse_date_time(test1$`TimeShelter`, "HM")
@@ -68,7 +68,7 @@ view(test1)
 test1
 summary(test1)
 head(test1)
-describeBy(test1, group="Population")
+describeBy(test1, test1$Population)
 
 # Average of each variable per population
 
@@ -84,6 +84,7 @@ table2
 
 devtools::install_github("dreamRs/esquisse")
 esquisse::esquisser()
+
 
 
 
@@ -106,10 +107,10 @@ plot1 <- ggplot(subtest1) +
 plot
 plot1
 
-anova <- lm(XXX) # create the model
+anova <- lm(CDIS~Population, data=test1) # create the model
 summary(anova) # view the results
 
-hist(test1$CDIS) # distribution of the continous variable
+hist(test1$CDIS) # distribution of the contineous variable
 
 boxplot(anova[['residuals']],main='Boxplot: Residuals',ylab='residual value')
 
@@ -133,8 +134,7 @@ correlation
 corrplot(correlation$r, type="upper", order="hclust", p.mat=correlation$P, sig.level=0.01, insig="blank", tl.cex=0.7  ,tl.col="black",tl.srt=45)
 chart.Correlation(as.matrix(test1[,4:7]), histogram = T,pch=19)
 
-# there is colinearities between Weight and Length > we keep only one (Length)
-# there is colinearities between TempShelter and TimeShelter > we keep only one (TempShelter)
+# what are your conclusions ?
 
 
 #5° search for extreme values
@@ -149,22 +149,15 @@ vignette("bestNormalize")
 hist(XXX)
 shapiro.test(XXX)
 
-hist(XXX)
-shapiro.test(XXX)
 
-hist(XXX)
-shapiro.test(XXX)
-
-#we try the model with XXX transformation for CDIS 
 
 bestNormalize(XXX) 
 
+#we try the model with XXX transformation for CDIS 
 
-CDISyj <- yeojohnson(test1$CDIS)
-test1$CDIS <- predict(CDISyj)
 
-#or add a new column
-CDISyj <- yeojohnson(test1$CDIS)
+# add a new column
+CDISyj <- XXX(test1$CDIS)
 x2 <- predict(CDISyj)
 test1 <- test1 %>% mutate(CDISyj=x2) #add the transformed variable
 
@@ -172,51 +165,29 @@ test1
 hist(test1$CDISyj)
 shapiro.test(test1$CDIS)
 
-CDIS <- orderNorm(test1$CDIS)
-x2 <- predict(CDIS)
-test1$CDIS <- x2
-hist(test1$CDIS)
-shapiro.test(test1$CDIS)
 
-L <- orderNorm(test1$Length)
-x3 <- predict(L)
-test1$Length <- x3
-hist(test1$Length)
-shapiro.test(test1$Length)
-
-TS <- orderNorm(test1$TempShelter)
-x4 <- predict(TS)
-test1$TempShelter <- x4
-hist(test1$TempShelter)
-shapiro.test(test1$TempEnv)
 
 
 #7° Build the model
 
-# the variables are: XXX
+# the variables are: CDISyj as response ; Population, Replicate, TempShelter, Length, ID
 # search for the best fixed structure using top-down strategy (as many fixed explanatory variables as possible) and choose the random effect (here there's only one)
 
 M1 <- lmer(XXX, data=test1, REML=T)
 summary(M1)
-anova(M1)
+Anova(M1)
 ranova(M1) # it's to check the random effect with the likelihood ratio test ; if the random variable is significant, it means that the model is worse without the random effect > keep the random effect.
 
-# now we compare the fixed effects with ML
-M1 <- lmer(XXX, data=test1, REML=F)
-anova(M1)
+#
+#
+#
+#
+#
+#
+#
+#
+#
 
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
 
 anova <- anova(M9,M8,M7,M6,M5,M4,M3,M2,M1)
 anova
@@ -231,11 +202,11 @@ save_kable(table2, file="aovCDIS.pdf")
 
 
 # Run the best model with REML=TRUE
-M7 <- lmer(CDISyj~Population+Replicate+Replicate:Population+ (1|ID), data=test1, REML=T)
-summary(M7)
-ranova(M7)
+Mbest <- lmer(XXX, data=test1, REML=T)
+summary(Mbest)
+ranova(Mbest)
 
-tab <- tab_model(M7, p.val="kr", show.df=T, show.reflvl=T, p.style="stars")
+tab <- tab_model(Mbest, p.val="kr", show.df=T, show.reflvl=T, p.style="stars")
 tab
 save_kable(tab, file="ICCCDIS.pdf") 
 # https://strengejacke.github.io/sjPlot/articles/tab_model_estimates.html 
@@ -243,11 +214,12 @@ save_kable(tab, file="ICCCDIS.pdf")
 
 plot_model(M7)
 
-png(file="M7.png") #to save the plot
-plot_model(M7)
+png(file="Mbest.png") #to save the plot
+plot_model(Mbest)
 dev.off()
 
 
+# What are our interpretation of the model ?
 
 #
 #
@@ -255,38 +227,32 @@ dev.off()
 #
 
 
-# If we take the population effect as random (it could be any sampled population)
-M10 <- lmer(CDISyj~Replicate+ (1|ID)+ (1|Population), data=test1, REML=T)
-summary(M10)
-ranova(M10)
 
 
 #8° Model validation
 
-# Check for colinearity with the Variance Inflation Factor: https://www.investopedia.com/terms/v/variance-inflation-factor.asp#:~:text=Variance%20inflation%20factor%20measures%20how,standard%20error%20in%20the%20regression. 
-vif(M7)
 
 # Check for homogeneity of variance: residuals vs predicted values
-plot(resid(M7)~fitted(M7), xlab="Predicted values", ylab="Normalized residuals")+
+plot(resid(Mbest)~fitted(Mbest), xlab="Predicted values", ylab="Normalized residuals")+
         abline(h=0, lty=2)
 
 #Check for independence of residuals versus individual explanatory variables
 op <- par(mfrow=c(2,2), mar=c(4,4,.5,.5))
-plot(resid(M7)~test1$Replicate, xlab="Replicate", ylab="Normalized residuals")+
+plot(resid(Mbest)~test1$Replicate, xlab="Replicate", ylab="Normalized residuals")+
         abline(h=0, lty=2)
-plot(resid(M7)~test1$Population, xlab="Population", ylab="Normalized residuals")+
+plot(resid(Mbest)~test1$Population, xlab="Population", ylab="Normalized residuals")+
         abline(h=0, lty=2)
-plot(resid(M7)~test1$Length, xlab="Length", ylab="Normalized residuals")+
+plot(resid(Mbest)~test1$Length, xlab="Length", ylab="Normalized residuals")+
         abline(h=0, lty=2)
-plot(resid(M7)~test1$TempShelter, xlab="TempShelter", ylab="Normalized residuals")+
+plot(resid(Mbest)~test1$TempShelter, xlab="TempShelter", ylab="Normalized residuals")+
         abline(h=0, lty=2)
 par(op)
 
 #Check for normality of residuals
-hist(resid(M7))
+hist(resid(Mbest))
 
-qqnorm(resid(M7))
-qqline(resid(M7))
+qqnorm(resid(Mbest))
+qqline(resid(Mbest))
 
 
 
@@ -310,11 +276,14 @@ plot3 <- ggplot(test1) +
 
 plot3
 
-ggplot(test1) +
+plot4 <- ggplot(test1) +
         aes(x = Population, y = CDIS, colour = Replicate) +
         geom_boxplot(fill = "#112446") +
         scale_color_hue(direction = 1) +
         theme_minimal()
+
+plot4
+
 
 
 #10° Calculate conditional (adjusted) repeatability for each population (instead of agreement repeatability)
@@ -324,10 +293,6 @@ ggplot(test1) +
 test5 <- test1[Population=="EPP"] 
 rpt6 <- rpt(CDISyj~Replicate+ (1|ID),grname=c("ID", "Fixed"), data= test5, datatype="Gaussian", nboot=1000, npermut=0)
 print(rpt6)
-
-rpt61 <- rpt(CDISyj~(1|ID),grname=c("ID"), data= test5, datatype="Gaussian", nboot=1000, npermut=0)
-print(rpt61)
-
 
 test6 <- test1[Population=="Long Key"] 
 rpt7 <- rpt(CDISyj~Replicate+ (1|ID),grname=c("ID", "Fixed"), data= test6, datatype="Gaussian", nboot=1000, npermut=0)
