@@ -2,7 +2,7 @@ Exercice to be prepared individually
 
 - Do the same analysis with the variable TDM (open field test: don't forget to change the variables Temperature and Time)
 
-- Write a report with:
+- Write a 2 pages report with:
 	- the best model structure
 	- a table with AIC
 	- the analysis of the model with fixed and random effects
